@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator - Challenge</title>
+    <style>
+        body{
+            height: 100vw;
+        }
+        .container{
+            height: 10vw;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Por favor a continuación ingrese una formula matemática</h1>
+</header>
+<div class="container">
+    <p>
+        <label for="equation">Ingrese aquí la formula matemática:</label>
+        <input id="equation" type="text" title="enter the equation">
+        <button id="calculate" name="calculate" title="press to calculate" onclick="calculate()">Calcular</button>
+    </p>
+    <p>
+        <strong id="result"></strong>
+    </p>
+</div>
+<footer>
+    <h4>Tenga en cuenta que esta aplicación solo funciona utilizando números y caracteres []{}() + - * /</h4>
+</footer>
+<script type="application/javascript">
+
+    function calculate() {
+        try {
+            setResult('');
+            let equation = String(document.getElementById("equation").value);
+            if(equation.trim() == ''){
+                throw 'Por favor ingrese una formula matemática para calcular';
+            }
+            let specialCharters = equation.match(/^([\{\}\[\]\(\)\*\/\-\+\d\s]+)$/g);
+            if(!specialCharters || specialCharters.length != 1){
+                throw 'Solo esta permitido usar los siguientes caracteres: \r\n []{}() + - * /';
+            }
+            let result = calculator(equation);
+            setResult('Resultado ' + result);
+        }
+        catch (e) {
+            alert(e);
+        }
+    }
+
+    function setResult(result) {
+        document.getElementById("result").innerHTML = result
+    }
+
+    function calculator(equation) {
+        let result = '';
+        let groupers = {
+            parenthesis: "\\(([\\d\\+\\-\\*\/\s]+)+\\)",
+            brackets: "\\[([\\d\\+\\-\\*\/\s]+)+\\]",
+            keys: "\\{([\\d\\+\\-\\*\/\s]+)+\\}"
+        };
+        let cal = String(equation);
+
+        try {
+            for (var index in groupers) {
+                let regex = new RegExp(groupers[index], 'g');
+                let matchs = cal.match(regex);
+                if (matchs) {
+                    matchs.forEach(function (item) {
+                        cal = cal.replace(item, eval(item));
+                    });
+                }
+                if (cal.match(regex)) {
+                    throw "Has " + index;
+                }
+            }
+            result = eval(cal);
+        }
+        catch (e) {
+            result = 'Error en formula';
+        }
+        return String(result);
+    }
+</script>
+</body>
+</html>
